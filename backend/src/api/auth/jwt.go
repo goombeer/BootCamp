@@ -37,7 +37,7 @@ func CheckJWT() gin.HandlerFunc{
             msg := fmt.Sprintf("こんにちは、「 %s 」さん", claims["user"])
             c.JSON(200, gin.H{"message": msg})
         } else {
-			c.JSON(401, gin.H{"message": "Empty Session.", "status": 401, "error": fmt.Sprint(err)})
+			c.JSON(401, gin.H{"message": "no token present in request", "status": 401, "error": fmt.Sprint(err)})
 			c.Abort()
         }
 	}
