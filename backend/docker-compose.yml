@@ -1,0 +1,47 @@
+version: '3'
+
+# マウント時に vendor 以下を削除してしまうため、別 volume を指定する
+# Gopkg.toml を編集する場合、vendor ボリュームも削除しイメージを再構築する
+volumes:
+  vendor:
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/api/Dockerfile
+    volumes:
+      - ./src/api:/go/src/api
+      - vendor:/go/src/api/vendor
+    ports:
+      - 3001:3001
+    tty:
+      true
+  mysql:
+    # コンテナに名前をつけることもできる
+    container_name: mysql
+    # Dockerfileのあるディレクトリのパスを指定する
+    build:
+      context: .
+      dockerfile: ./docker/mysql/Dockerfile
+    # mysqlのホスト名を決める
+    hostname: mysql
+    # 外部に公開するポートを指定する
+    # これがないと外部からアクセスできない
+    ports:
+      - "3306:3306"
+    # mysqlの設定
+    environment:
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: mysql
+    # docker-compose run実行時に実行される
+    # オプションは日本語文の字化けに対するおまじない
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci --skip-character-set-client-handshake
+    # パスをボリュームとしてマウント
+    # :の左側がホストディレクトリ、:の右側がコンテナ上のディレクトリ
+    volumes:
+      # 初期設定を読み込む
+      - "./docker/mysql/my.conf:/etc/mysql/my.conf"
+      # MySQL起動時にDBを作成する
+      - "./docker/mysql/init/:/docker-entrypoint-initdb.d"
