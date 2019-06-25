@@ -7,7 +7,7 @@ import (
 
 func GormConnect() *gorm.DB {
   
-    db,err := gorm.Open("mysql", "root:password@tcp(mysql:3306)/backend?charset=utf8&parseTime=True&loc=Local")
+    db,err := gorm.Open("mysql", "root:password@tcp(mysql:3306)/bootcamp?charset=utf8&parseTime=True&loc=Local")
 
     if err != nil {
       panic(err.Error())
